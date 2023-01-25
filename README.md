@@ -103,3 +103,50 @@ In order to complete this assignment, you must do the following:
 ### Grading
 
 This assignment will be graded via peer assessment.
+
+
+## Assumption: The matrix given as input is a square matrix
+makeCacheMatrix <- function(x = matrix()) {
+  ### inv_mat - defining a matrix to represent the inverse
+  ### Initializing the inverse (inv_mat) to null value
+  inv_mat <- NULL
+  ### to run several iterations in a loop function, without caching takes time
+  ### caching reduces the time of computation
+  set <- function (y) {
+    ### use assign operator to assign value 
+    ### to an object in an environment that is
+    ### very different from the current environment
+    
+    x <<- y 
+    ### When used repeatedly, the value of inverse matrix may modified
+    ### so it is reinitialized as a null matrix
+    inv_mat <<- NULL
+    }
+  ### get the matrix that was fed as input
+  get <- function() x 
+  set_inverse <- function(solve) inv_mat<<- solve
+  get_inverse <- function() inv_mat
+  list(set = set, get = get, set_inverse = set_inverse, get_inverse = get_inverse)
+}
+
+
+cacheSolve <- function(x, ...) {
+  ### original matrix is fed as an input to makeCacheMatrix
+  ### inverse of the original matrix will be returned
+  inv_mat <- x$get_inverse()
+  ### If the inverse of the matrix is already calculated
+  ### get it from the cache
+  if(!is.null(inv_mat)) {
+    message("getting cached data")
+    return(inv_mat)
+    ### skip the computation necessary for computing 
+    ### inverse as it is already cached
+  }
+  ### If inverse is not calculated, calculate the inverse
+  data <- x$get()
+  inv_mat <- solve(data,...)
+  ### The value of inverse matrix is set in the cache by
+  ### the following set_inverse function
+  x$set_inverse(inv_mat)
+  inv_mat
+}
