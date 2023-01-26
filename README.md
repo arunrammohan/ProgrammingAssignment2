@@ -28,29 +28,26 @@ really a list containing a function to
 4.  get the value of the mean
 
 <!-- -->
-
-    ## Assumption: The matrix given as input is a square matrix
-makeCacheMatrix <- function(x = matrix()) {
-  ### inv_mat - defining a matrix to represent the inverse
-  ### Initializing the inverse (inv_mat) to null value
-  inv_mat <- NULL
-  ### to run several iterations in a loop function, without caching takes time
-  ### caching reduces the time of computation
-  set <- function (y) {
-    ### use assign operator to assign value 
-    ### to an object in an environment that is
-    ### very different from the current environment
-    
-    x <<- y 
-    ### When used repeatedly, the value of inverse matrix may modified
-    ### so it is reinitialized as a null matrix
-    inv_mat <<- NULL
-    }
-  ### get the matrix that was fed as input
-  get <- function() x 
-  set_inverse <- function(solve) inv_mat<<- solve
-  get_inverse <- function() inv_mat
-  list(set = set, get = get, set_inverse = set_inverse, get_inverse = get_inverse)
+library(dplyr)
+library(MASS)
+### A function that can set the value of a matrix
+makeCacheMatrix1 <- function(x = matrix()){
+  ### the input is a matrix
+  ### the inverse matrix is set to null
+  inverse_mat1 <- NULL
+  ### the received input is set
+  set <- function(y){
+    x <<- y
+    inverse_mat1 <<- NULL
+  }
+  ### get function retrieves the matrix
+  get <- function() x
+  set_inverse1 <- function(inverse) inverse_mat1 <<- inverse
+  get_inverse1 <- function() {
+    inver <- ginv(x)
+    inver%*%x
+  }
+  list(set = set, get = get, set_inverse1 = set_inverse1, get_inverse1 = get_inverse1)
 }
 
 
@@ -63,25 +60,21 @@ cache and skips the computation. Otherwise, it calculates the mean of
 the data and sets the value of the mean in the cache via the `setmean`
 function.
 
-    cacheSolve <- function(x, ...) {
-  ### original matrix is fed as an input to makeCacheMatrix
-  ### inverse of the original matrix will be returned
-  inv_mat <- x$get_inverse()
-  ### If the inverse of the matrix is already calculated
-  ### get it from the cache
-  if(!is.null(inv_mat)) {
+cacheSolve1 <- function(x, ...) {
+  ### original matrix is fed as an input to makeCacheMatrix ### inverse of the original matrix will be returned
+  inverse_mat1 <- x$get_inverse1()
+  ### If the inverse of the matrix is already calculated ### get it from the cache
+  if(!is.null(inverse_mat1)) {
     message("getting cached data")
-    return(inv_mat)
-    ### skip the computation necessary for computing 
-    ### inverse as it is already cached
+    return(inverse_mat1)
+    ### skip the computation necessary for computing ### inverse as it is already cached
   }
   ### If inverse is not calculated, calculate the inverse
   data <- x$get()
-  inv_mat <- solve(data,...)
-  ### The value of inverse matrix is set in the cache by
-  ### the following set_inverse function
-  x$set_inverse(inv_mat)
-  inv_mat
+  inverse_mat1 <- solve(data,...)
+  ### The value of inverse matrix is set in the cache by ### the following set_inverse function
+  x$set_inverse(inverse_mat1)
+  inverse_mat1
 }
 
 ### Assignment: Caching the Inverse of a Matrix
