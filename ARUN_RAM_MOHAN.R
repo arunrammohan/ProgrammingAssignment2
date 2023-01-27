@@ -63,8 +63,3 @@ cacheSolve1 <- function(x, ...) {
   x$set_inverse(inverse_mat1)
   inverse_mat1
 }
-f <- makeCacheMatrix1(matrix(1:10,2,5))
-f$get()
-f$get()
-f$get_inverse1()
-cacheSolve1(f)
